@@ -9,9 +9,10 @@ const getAllNotes = async (req, res) => {
         if (req.user.role === "admin") {
             const targetUserId = req.query.id;
             if (!targetUserId) {
-                return res.status(400).json({ message: "User ID is required." });
+                notes = await Note.find();
+            }else{
+                notes = await Note.find({ user: targetUserId });
             }
-            notes = await Note.find({ user: targetUserId });
         } else {
             notes = await Note.find({ user: userId });
         }
