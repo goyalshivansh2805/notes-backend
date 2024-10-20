@@ -1,25 +1,31 @@
 const Note = require("../models/Note");
-
 const getAllNotes = async (req, res) => {
     try {
         const userId = req.user?._id || null;
-        if(!userId){
-            return res.status(401).json({message:"You are not authorized to view the notes!"});
+        if (!userId) {
+            return res.status(401).json({ message: "You are not authorized to view the notes!" });
         }
         let notes;
-        if(req.user.role === "admin"){
-            notes = await Note.find();
-        }else{
-            notes = await Note.find({user: userId});
+        if (req.user.role === "admin") {
+            const targetUserId = req.query.id;
+            if (!targetUserId) {
+                return res.status(400).json({ message: "User ID is required." });
+            }
+            notes = await Note.find({ user: targetUserId });
+        } else {
+            notes = await Note.find({ user: userId });
         }
-        if(!notes.length){
-            return res.status(404).json({message:"No notes found!"});
+
+        if (!notes.length) {
+            return res.status(404).json({ message: "No notes found!" });
         }
+
         res.status(200).json(notes);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 }
+
 
 const getNote = async (req, res) => {
     try {
