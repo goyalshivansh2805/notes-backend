@@ -5,7 +5,7 @@ const createSession = (sessionId,userId) =>{
 }
 
 const getSession = (sessionId) =>{
-    console.log(sessionIdMap);
+    // console.log(sessionIdMap);
     return sessionIdMap.get(sessionId);
 }
 

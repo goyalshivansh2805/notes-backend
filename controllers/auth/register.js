@@ -8,6 +8,10 @@ const handleRegister = async (req, res) => {
         return res.status(400).json({message:"Please provide all fields!"}
     )};
     try {
+        const existingUser = await User.findOne({email});
+        if(existingUser){
+            return res.status(400).json({message:"User already exists!"});
+        };
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await User.create({ username, email, password: hashedPassword });
         res.status(201).json({ id : user._id,message: "User registered successfully!" });

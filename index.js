@@ -25,6 +25,8 @@ app.use("/api/auth",require("./routes/auth"));
 
 app.use("/api/notes",verifyId,require("./routes/notes"));
 
+app.use("/api/promote",verifyId,require("./routes/promote"));
+
 app.use("*",(req,res)=>{
     res.status(404).json({message:"EndPoint not found!"});
 });
