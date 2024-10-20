@@ -6,7 +6,7 @@ const getAllNotes = async (req, res) => {
         if(!userId){
             return res.status(401).json({message:"You are not authorized to view the notes!"});
         }
-        const notes = await Note.find({ user: id });
+        const notes = await Note.find({ user:userId });
         if(!notes.length){
             return res.status(404).json({message:"No notes found!"});
         }
