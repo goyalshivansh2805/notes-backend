@@ -6,7 +6,12 @@ const getAllNotes = async (req, res) => {
         if(!userId){
             return res.status(401).json({message:"You are not authorized to view the notes!"});
         }
-        const notes = await Note.find({ user: id });
+        let notes;
+        if(req.user.role === "admin"){
+            notes = await Note.find();
+        }else{
+            notes = await Note.find({user: userId});
+        }
         if(!notes.length){
             return res.status(404).json({message:"No notes found!"});
         }
@@ -23,11 +28,11 @@ const getNote = async (req, res) => {
             return res.status(401).json({message:"You are not authorized to view the notes!"});
         }
         const note = await Note.findById(req.params.id);
-        if(note.user.toString() !== req.user._id){
-            return res.status(401).json({message:"You are not authorized to view this note!"});
-        }
         if(!note){
             return res.status(404).json({message:"Note not found!"});
+        }
+        if(note.user.toString() !== req.user._id.toString() && req.user.role !== "admin"){
+            return res.status(401).json({message:"You are not authorized to view this note!"});
         }
         res.status(200).json(note);
     } catch (error) {
@@ -53,7 +58,7 @@ const updateNote = async (req, res) => {
         if(!note){
             return res.status(404).json({message:"Note not found!"});
         }
-        if(note.user.toString() !== req.user._id){
+        if(note.user.toString() !== req.user._id.toString() && req.user.role !== "admin"){
             return res.status(401).json({message:"You are not authorized to update this note!"});
         }
         const updatedNote = await Note.findByIdAndUpdate(req.params.id, req.body, {new:true});
@@ -69,7 +74,7 @@ const deleteNote = async (req, res) => {
         if(!note){
             return res.status(404).json({message:"Note not found!"});
         }
-        if(note.user.toString() !== req.user._id){
+        if(note.user.toString() !== req.user._id.toString() && req.user.role !== "admin"){
             return res.status(401).json({message:"You are not authorized to delete this note!"});
         }
         await Note.findByIdAndDelete(req.params.id);
